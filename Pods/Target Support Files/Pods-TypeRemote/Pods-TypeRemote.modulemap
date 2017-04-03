@@ -1,0 +1,6 @@
+framework module Pods_TypeRemote {
+  umbrella header "Pods-TypeRemote-umbrella.h"
+
+  export *
+  module * { export * }
+}
