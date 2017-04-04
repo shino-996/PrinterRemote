@@ -15,6 +15,7 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     @IBOutlet weak var addressLabel: UILabel!
     var locationSender: GCDAsyncUdpSocket!
     var isFirstAppear: Bool!
+    var lastLocation: CGPoint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,13 +34,15 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         if segue.identifier! == "ChangeIP" {
             let controller = segue.destination as! IPConnectViewController
             controller.delegator = self
+            controller.ipText.text = ipAddress
+            controller.portText.text =  "\(portAddress!)"
         }
     }
     
     func set(Host host: String, AndPort port: UInt16) {
         ipAddress = host
         portAddress = port
-        addressLabel.text = ipAddress + "\(portAddress)"
+        addressLabel.text = "Unconnected"
         locationSender = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.global())
         do {
             try locationSender.connect(toHost: ipAddress, onPort: portAddress)
@@ -48,13 +51,46 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         }
     }
     
+    func udpSocket(_ sock: GCDAsyncUdpSocket, didConnectToAddress address: Data) {
+        DispatchQueue.main.sync {
+            addressLabel.text = ipAddress + ":  \(portAddress!)"
+        }
+    }
+    
     @IBAction func move(_ sender: Any) {
         let moveSender = sender as! UIPanGestureRecognizer
-        if moveSender.state != .ended && moveSender.state != .cancelled {
+        switch moveSender.state {
+        case .possible:
+            print("Touch possible")
+        case .began:
+            lastLocation = moveSender.location(in: moveSender.view)
+            fallthrough
+        case .changed:
+            let screenLocation = moveSender.location(in: moveSender.view)
+            let location = CGPoint(x: screenLocation.x / 288 * 800, y: screenLocation.y / 216 * 600)
+            if sqrt(pow(location.x - lastLocation.x, 2) - pow(location.y - lastLocation.y, 2)) < 5 {
+                lastLocation = location
+                break;
+            }
+            if CGRect(x: 0, y: 0, width: 800, height: 600).contains(location) {
+                lastLocation = location
+                let str = String(format: "%03d%03d9#3", Int(location.x), Int(location.y))
+                print(str)
+                locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
+            } else {
+                let str = String(format: "%03d%03d0#3", Int(lastLocation.x), Int(lastLocation.y))
+                print(str)
+                locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
+            }
+        case .ended:
+            fallthrough
+        case .cancelled:
             let location = moveSender.location(in: moveSender.view)
-            let str = "\(location.x),\(location.y)"
-            print("\(location.x), \(location.y)")
-            locationSender.send(str.data(using: .utf8)!, withTimeout: -1, tag: 0)
+            let str = String(format: "%03d%03d0#3", Int(location.x), Int(location.y))
+            print(str)
+            locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 2)
+        default:
+            print("Failed!")
         }
     }
     
