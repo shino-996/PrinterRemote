@@ -25,14 +25,14 @@
                                     <action selector="changeIP" destination="BYZ-38-t0r" eventType="touchUpInside" id="tNS-zC-DkB"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="192.168.255.2" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" id="qu2-AB-AIb">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="192.168.4.1" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" id="qu2-AB-AIb">
                                 <rect key="frame" x="80" y="238" width="120" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="51649" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" id="1FK-gr-HVl">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="8080" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" id="1FK-gr-HVl">
                                 <rect key="frame" x="207" y="238" width="63" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
@@ -88,26 +88,43 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" misplaced="YES" id="Idf-gc-cXR">
+                            <view contentMode="scaleToFill" misplaced="YES" id="Idf-gc-cXR" customClass="PaintView" customModule="TypeRemote" customModuleProvider="target">
                                 <rect key="frame" x="16" y="176" width="288" height="216"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <gestureRecognizers/>
                                 <connections>
-                                    <outletCollection property="gestureRecognizers" destination="BAZ-5y-yPg" appends="YES" id="cCt-EZ-qX5"/>
+                                    <outletCollection property="gestureRecognizers" destination="NkR-nJ-jWC" appends="YES" id="R1a-fM-F94"/>
                                 </connections>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="2px-NH-0rN">
+                                <rect key="frame" x="86" y="418" width="31" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="清除"/>
+                                <connections>
+                                    <action selector="clearDraw" destination="nbs-Mm-91L" eventType="touchUpInside" id="xYP-oS-ZQF"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="jjJ-RN-hhZ">
+                                <rect key="frame" x="205" y="418" width="31" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="保存"/>
+                                <connections>
+                                    <action selector="saveImage" destination="nbs-Mm-91L" eventType="touchUpInside" id="p1q-LR-ZFB"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="addressLabel" destination="30o-aH-xPz" id="tte-uN-XD6"/>
+                        <outlet property="paintView" destination="Idf-gc-cXR" id="qeC-Rh-bsF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2fZ-rM-bEi" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <panGestureRecognizer minimumNumberOfTouches="1" id="BAZ-5y-yPg">
+                <panGestureRecognizer minimumNumberOfTouches="1" id="NkR-nJ-jWC">
                     <connections>
-                        <action selector="move:" destination="nbs-Mm-91L" id="hJZ-sW-1eV"/>
+                        <action selector="move:" destination="nbs-Mm-91L" id="Aoz-rn-fQ6"/>
                     </connections>
                 </panGestureRecognizer>
             </objects>

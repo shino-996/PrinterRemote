@@ -13,10 +13,11 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     var ipAddress: String!
     var portAddress: UInt16!
     @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var paintView: PaintView!
     var locationSender: GCDAsyncUdpSocket!
     var isFirstAppear: Bool!
     var lastLocation: CGPoint!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         isFirstAppear = true
@@ -34,8 +35,8 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         if segue.identifier! == "ChangeIP" {
             let controller = segue.destination as! IPConnectViewController
             controller.delegator = self
-            controller.ipText.text = ipAddress
-            controller.portText.text =  "\(portAddress!)"
+//            controller.ipText.text = ipAddress
+//            controller.portText.text =  "\(portAddress)"
         }
     }
     
@@ -68,26 +69,25 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         case .changed:
             let screenLocation = moveSender.location(in: moveSender.view)
             let location = CGPoint(x: screenLocation.x / 288 * 800, y: screenLocation.y / 216 * 600)
-            if sqrt(pow(location.x - lastLocation.x, 2) - pow(location.y - lastLocation.y, 2)) < 5 {
-                lastLocation = location
-                break;
-            }
             if CGRect(x: 0, y: 0, width: 800, height: 600).contains(location) {
                 lastLocation = location
-                let str = String(format: "%03d%03d9#3", Int(location.x), Int(location.y))
+                let str = String(format: "%03d%03d9AB", Int(location.x), Int(location.y))
                 print(str)
+                paintView.draw(screenLocation)
                 locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
             } else {
-                let str = String(format: "%03d%03d0#3", Int(lastLocation.x), Int(lastLocation.y))
+                let str = String(format: "%03d%03d0AB", Int(lastLocation.x), Int(lastLocation.y))
                 print(str)
+                paintView.finishCurrentDraw()
                 locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
             }
         case .ended:
             fallthrough
         case .cancelled:
             let location = moveSender.location(in: moveSender.view)
-            let str = String(format: "%03d%03d0#3", Int(location.x), Int(location.y))
+            let str = String(format: "%03d%03d0AB", Int(location.x), Int(location.y))
             print(str)
+            paintView.finishCurrentDraw()
             locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 2)
         default:
             print("Failed!")
@@ -96,5 +96,13 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     
     func socket(_ sock: GCDAsyncSocket, didWriteDataWithTag tag: Int) {
         print(tag)
+    }
+    
+    @IBAction func clearDraw() {
+        paintView.clearDraw()
+    }
+    
+    @IBAction func saveImage() {
+        paintView.saveImage()
     }
 }

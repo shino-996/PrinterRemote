@@ -14,6 +14,8 @@
 		B47637311E710155007AF472 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B476372F1E710155007AF472 /* Main.storyboard */; };
 		B47637331E710155007AF472 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B47637321E710155007AF472 /* Assets.xcassets */; };
 		B47637361E710155007AF472 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B47637341E710155007AF472 /* LaunchScreen.storyboard */; };
+		B4E89B381EC0485800089620 /* PaintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E89B371EC0485800089620 /* PaintView.swift */; };
+		B4E89B3A1EC07AE600089620 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4E89B391EC07AE600089620 /* Photos.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		B47637321E710155007AF472 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B47637351E710155007AF472 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B47637371E710155007AF472 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B4E89B371EC0485800089620 /* PaintView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaintView.swift; sourceTree = "<group>"; };
+		B4E89B391EC07AE600089620 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		CC4F2D699F7BEB6418407965 /* Pods-TypeRemote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TypeRemote.release.xcconfig"; path = "Pods/Target Support Files/Pods-TypeRemote/Pods-TypeRemote.release.xcconfig"; sourceTree = "<group>"; };
 		DB12B7431BABFEE23D00FDFE /* Pods-TypeRemote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TypeRemote.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TypeRemote/Pods-TypeRemote.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -35,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4E89B3A1EC07AE600089620 /* Photos.framework in Frameworks */,
 				49B5B8D02FCF1FEE85F0D542 /* Pods_TypeRemote.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,6 +59,7 @@
 		9E7C40566A67A0464DC21302 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B4E89B391EC07AE600089620 /* Photos.framework */,
 				3E1BC71A736243C84B70CDA6 /* Pods_TypeRemote.framework */,
 			);
 			name = Frameworks;
@@ -82,6 +88,7 @@
 			children = (
 				B476372B1E710155007AF472 /* AppDelegate.swift */,
 				B414BB081E718920008F2E6F /* PaintViewController.swift */,
+				B4E89B371EC0485800089620 /* PaintView.swift */,
 				B476372D1E710155007AF472 /* IPConnectViewController.swift */,
 				B476372F1E710155007AF472 /* Main.storyboard */,
 				B47637321E710155007AF472 /* Assets.xcassets */,
@@ -216,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B476372E1E710155007AF472 /* IPConnectViewController.swift in Sources */,
+				B4E89B381EC0485800089620 /* PaintView.swift in Sources */,
 				B414BB091E718920008F2E6F /* PaintViewController.swift in Sources */,
 				B476372C1E710155007AF472 /* AppDelegate.swift in Sources */,
 			);
