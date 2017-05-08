@@ -8,6 +8,7 @@
 
 import UIKit
 import CocoaAsyncSocket
+import Photos
 
 class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate {
     var ipAddress: String!
@@ -17,10 +18,19 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     var locationSender: GCDAsyncUdpSocket!
     var isFirstAppear: Bool!
     var lastLocation: CGPoint!
+    var touchCount = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         isFirstAppear = true
+        let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
+        let arrayFromFile = NSArray(contentsOfFile: path)
+        if let array = arrayFromFile {
+            paintView.plistArray = array as! [[String : String]]
+        } else {
+            let emptyArray = [[String: String]]()
+            NSArray(array: emptyArray).write(toFile: path, atomically: true)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -67,6 +77,12 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             lastLocation = moveSender.location(in: moveSender.view)
             fallthrough
         case .changed:
+            touchCount += 1
+            if touchCount != 6 {
+                break
+            } else {
+                touchCount = 0
+            }
             let screenLocation = moveSender.location(in: moveSender.view)
             let location = CGPoint(x: screenLocation.x / 288 * 800, y: screenLocation.y / 216 * 600)
             if CGRect(x: 0, y: 0, width: 800, height: 600).contains(location) {
@@ -103,6 +119,19 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     }
     
     @IBAction func saveImage() {
-        paintView.saveImage()
+        PHPhotoLibrary.shared().performChanges({
+            let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
+            let photoID = result.placeholderForCreatedAsset?.localIdentifier
+            self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
+            let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
+            NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
+        }) { (ifSuccess: Bool, error: Error?) in
+            if ifSuccess {
+                print("Save sucessfully!")
+            } else {
+                print("Save failed!")
+                print(error!.localizedDescription)
+            }
+        }
     }
 }

@@ -7,11 +7,11 @@
 //
 
 import UIKit
-import Photos
 
 class PaintView: UIView {
     var pointToDraw = [[CGPoint]]()
     var currentPointToDraw = [CGPoint]()
+    var plistArray = [[String: String]]()
     var image: UIImage!
     
     override func draw(_ rect: CGRect) {
@@ -60,9 +60,5 @@ class PaintView: UIView {
         pointToDraw.removeAll()
         currentPointToDraw.removeAll()
         self.setNeedsDisplay()
-    }
-    
-    func saveImage() {
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
 }

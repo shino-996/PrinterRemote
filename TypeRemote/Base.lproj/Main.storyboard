@@ -113,6 +113,14 @@
                                     <action selector="saveImage" destination="nbs-Mm-91L" eventType="touchUpInside" id="p1q-LR-ZFB"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="5UZ-KI-pKg">
+                                <rect key="frame" x="70" y="474" width="62" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="历史记录"/>
+                                <connections>
+                                    <segue destination="UQd-60-E3J" kind="modal" id="nz9-qq-51D"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -122,13 +130,41 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2fZ-rM-bEi" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <panGestureRecognizer minimumNumberOfTouches="1" id="NkR-nJ-jWC">
+                <panGestureRecognizer minimumNumberOfTouches="1" maximumNumberOfTouches="1" id="NkR-nJ-jWC">
                     <connections>
                         <action selector="move:" destination="nbs-Mm-91L" id="Aoz-rn-fQ6"/>
                     </connections>
                 </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-243" y="137"/>
+        </scene>
+        <!--Table View Controller-->
+        <scene sceneID="qZL-l3-3EA">
+            <objects>
+                <tableViewController id="UQd-60-E3J" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="p0N-Ww-QG8">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TableCell" id="zPm-5R-2ye">
+                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zPm-5R-2ye" id="Myc-Ua-609">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="UQd-60-E3J" id="PGg-NY-naU"/>
+                            <outlet property="delegate" destination="UQd-60-E3J" id="aZi-iM-acx"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lqA-mI-2JK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-243" y="828"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
