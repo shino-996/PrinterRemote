@@ -1,12 +1,17 @@
 PODS:
   - CocoaAsyncSocket (7.6.0)
+  - YYImage (1.0.4):
+    - YYImage/Core (= 1.0.4)
+  - YYImage/Core (1.0.4)
 
 DEPENDENCIES:
   - CocoaAsyncSocket
+  - YYImage
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: b9d5589f07baf9de8f34cc25abd4fcba28f13805
+  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 4da20e0247db59f6653f23026a6b0b1eb0dcb89f
+PODFILE CHECKSUM: aebd2ef69c14bc88270a9d9e0491081c320bbc18
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.2.1

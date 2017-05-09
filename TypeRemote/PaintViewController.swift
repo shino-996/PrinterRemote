@@ -10,7 +10,7 @@ import UIKit
 import CocoaAsyncSocket
 import Photos
 
-class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate {
+class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory {
     var ipAddress: String!
     var portAddress: UInt16!
     @IBOutlet weak var addressLabel: UILabel!
@@ -47,6 +47,10 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             controller.delegator = self
 //            controller.ipText.text = ipAddress
 //            controller.portText.text =  "\(portAddress)"
+        } else if segue.identifier! == "DrawHistory" {
+            let controller = segue.destination as! DrawHistoryViewController
+            controller.listData = paintView.plistArray
+            controller.delegator = self
         }
     }
     
@@ -77,22 +81,22 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             lastLocation = moveSender.location(in: moveSender.view)
             fallthrough
         case .changed:
-            touchCount += 1
-            if touchCount != 6 {
-                break
-            } else {
-                touchCount = 0
-            }
+//            touchCount += 1
+//            if touchCount != 2 {
+//                break
+//            } else {
+//                touchCount = 0
+//            }
             let screenLocation = moveSender.location(in: moveSender.view)
             let location = CGPoint(x: screenLocation.x / 288 * 800, y: screenLocation.y / 216 * 600)
             if CGRect(x: 0, y: 0, width: 800, height: 600).contains(location) {
                 lastLocation = location
-                let str = String(format: "%03d%03d9AB", Int(location.x), Int(location.y))
+                let str = String(format: "%04d %04d 9", Int(location.x), Int(location.y))
                 print(str)
                 paintView.draw(screenLocation)
                 locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
             } else {
-                let str = String(format: "%03d%03d0AB", Int(lastLocation.x), Int(lastLocation.y))
+                let str = String(format: "%04d %04d 0", Int(lastLocation.x), Int(lastLocation.y))
                 print(str)
                 paintView.finishCurrentDraw()
                 locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
@@ -101,7 +105,7 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             fallthrough
         case .cancelled:
             let location = moveSender.location(in: moveSender.view)
-            let str = String(format: "%03d%03d0AB", Int(location.x), Int(location.y))
+            let str = String(format: "%04d %04d 0", Int(location.x), Int(location.y))
             print(str)
             paintView.finishCurrentDraw()
             locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 2)
@@ -132,6 +136,33 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
                 print("Save failed!")
                 print(error!.localizedDescription)
             }
+        }
+    }
+    
+    func sendDrawHistory(_ historyStr: String) {
+        var lineSetStr = historyStr.substring(with: historyStr.index(historyStr.startIndex, offsetBy: 2) ..< historyStr.endIndex)
+        lineSetStr.remove(at: lineSetStr.index(before: lineSetStr.endIndex))
+        lineSetStr.remove(at: lineSetStr.index(before: lineSetStr.endIndex))
+        print(lineSetStr)
+        let lineStr = lineSetStr.components(separatedBy: "], [")
+        for pointSetStr in lineStr {
+            var points = pointSetStr.substring(with: pointSetStr.index(pointSetStr.startIndex, offsetBy: 1) ..< pointSetStr.endIndex)
+            points.remove(at: points.index(before: points.endIndex))
+            print(points)
+            let point = points.components(separatedBy: "), (")
+            for coordinate in point {
+                let str = coordinate
+                let coordinates = str.components(separatedBy: ", ")
+                let x = Double(coordinates[0])
+                let y = Double(coordinates[1])
+                let udpStr = String(format: "%04d %04d 9", Int(x!), Int(y!)) as Optional
+                locationSender.send((udpStr?.data(using: .ascii)!)!, withTimeout: -1, tag: 1)
+            }
+            let lastPointCoordinates = point.last?.components(separatedBy: ", ")
+            let x = Double((lastPointCoordinates?[0])!)
+            let y = Double((lastPointCoordinates?[1])!)
+            let udpStr = String(format: "%04d %04d 0", Int(x!), Int(y!)) as Optional
+            locationSender.send((udpStr?.data(using: .ascii)!)!, withTimeout: -1, tag: 1)
         }
     }
 }
