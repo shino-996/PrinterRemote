@@ -45,8 +45,6 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         if segue.identifier! == "ChangeIP" {
             let controller = segue.destination as! IPConnectViewController
             controller.delegator = self
-//            controller.ipText.text = ipAddress
-//            controller.portText.text =  "\(portAddress)"
         } else if segue.identifier! == "DrawHistory" {
             let controller = segue.destination as! DrawHistoryViewController
             controller.listData = paintView.plistArray
@@ -81,12 +79,6 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             lastLocation = moveSender.location(in: moveSender.view)
             fallthrough
         case .changed:
-            touchCount += 1
-            if touchCount != 2 {
-                break
-            } else {
-                touchCount = 0
-            }
             let screenLocation = moveSender.location(in: moveSender.view)
             let location = CGPoint(x: screenLocation.x / 300 * 1500, y: screenLocation.y / 200 * 1000)
             if CGRect(x: 0, y: 0, width: 1500, height: 1000).contains(location) {

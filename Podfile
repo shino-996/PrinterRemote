@@ -3,5 +3,4 @@ use_frameworks!
 
 target 'TypeRemote' do
   pod 'CocoaAsyncSocket'
-  pod 'YYImage'
 end
