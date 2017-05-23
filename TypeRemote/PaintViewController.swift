@@ -11,18 +11,21 @@ import CocoaAsyncSocket
 import Photos
 
 class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory {
-    var ipAddress: String!
-    var portAddress: UInt16!
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var paintView: PaintView!
-    var locationSender: GCDAsyncUdpSocket!
+    // 记录程序是否第一次打开，保证在程序刚打开时会弹出连接界面
     var isFirstAppear: Bool!
+    // UDP对象
+    var locationSender: GCDAsyncUdpSocket!
+    // 连接时使用的IP和端口
+    var ipAddress: String!
+    var portAddress: UInt16!
     var lastLocation: CGPoint!
-    var touchCount = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         isFirstAppear = true
+        // 加载历史记录文件，如果没有记录，新建一个文件
         let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
         let arrayFromFile = NSArray(contentsOfFile: path)
         if let array = arrayFromFile {
@@ -35,12 +38,14 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // 显示界面后，如果是第一次打开程序，弹出连接界面
         if isFirstAppear {
             isFirstAppear = false
             performSegue(withIdentifier: "ChangeIP", sender: self)
         }
     }
     
+    // 分别跳转至连接界面和历史记录界面
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier! == "ChangeIP" {
             let controller = segue.destination as! IPConnectViewController
@@ -52,18 +57,22 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         }
     }
     
+    // IPConnectViewController委托方法，回调设置连接IPt端口
     func set(Host host: String, AndPort port: UInt16) {
         ipAddress = host
         portAddress = port
+        // 连接前将地址栏状态设置为未连接
         addressLabel.text = "Unconnected"
         locationSender = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.global())
         do {
             try locationSender.connect(toHost: ipAddress, onPort: portAddress)
         } catch(let error) {
+            print("UDP连接失败")
             print(error)
         }
     }
     
+    // CocoaAsyncSocket委托方法，连接上UDP时在地址栏显示连接上的IP和端口
     func udpSocket(_ sock: GCDAsyncUdpSocket, didConnectToAddress address: Data) {
         DispatchQueue.main.sync {
             addressLabel.text = ipAddress + ":  \(portAddress!)"
