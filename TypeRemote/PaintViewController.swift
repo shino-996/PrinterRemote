@@ -9,10 +9,12 @@
 import UIKit
 import CocoaAsyncSocket
 import Photos
+import MobileCoreServices
 
-class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory {
+class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var paintView: PaintView!
+    @IBOutlet weak var loadingSign: UIActivityIndicatorView!
     // 记录程序是否第一次打开，保证在程序刚打开时会弹出连接界面
     var isFirstAppear: Bool!
     // UDP对象
@@ -34,6 +36,7 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             let emptyArray = [[String: String]]()
             NSArray(array: emptyArray).write(toFile: path, atomically: true)
         }
+        loadingSign.hidesWhenStopped = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -123,18 +126,27 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     }
     
     @IBAction func saveImage() {
-        PHPhotoLibrary.shared().performChanges({
-            let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
-            let photoID = result.placeholderForCreatedAsset?.localIdentifier
-            self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
-            let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
-            NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
-        }) { (ifSuccess: Bool, error: Error?) in
-            if ifSuccess {
-                print("Save sucessfully!")
-            } else {
-                print("Save failed!")
-                print(error!.localizedDescription)
+        DispatchQueue.global().async {
+            DispatchQueue.main.sync {
+                self.loadingSign.startAnimating()
+            }
+            PHPhotoLibrary.shared().performChanges({
+                let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
+                let photoID = result.placeholderForCreatedAsset?.localIdentifier
+                self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
+                let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
+                NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
+            }) { (ifSuccess: Bool, error: Error?) in
+                if ifSuccess {
+                    print("Save sucessfully!")
+                } else {
+                    print("Save failed!")
+                    print(error!.localizedDescription)
+                }
+            }
+            DispatchQueue.main.sync {
+                self.loadingSign.stopAnimating()
+                let alert = UIAlertController(title: <#T##String?#>, message: <#T##String?#>, preferredStyle: <#T##UIAlertControllerStyle#>)
             }
         }
     }
@@ -164,5 +176,69 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             let udpStr = String(format: "%04d %04d 0", Int(x), Int(y)) as Optional
             locationSender.send((udpStr?.data(using: .ascii)!)!, withTimeout: -1, tag: 1)
         }
+    }
+    
+    @IBAction func imageRecognize() {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.modalTransitionStyle = .coverVertical
+        imagePickerController.sourceType = .camera
+        imagePickerController.cameraCaptureMode = .photo
+        present(imagePickerController, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let mediaType = info[UIImagePickerControllerMediaType] as! String
+        if mediaType == kUTTypeImage as String {
+            let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+            dismiss(animated: true)
+            DispatchQueue.global().async {
+                DispatchQueue.main.sync {
+                    self.loadingSign.startAnimating()
+                }
+                self.recognize(Image: image)
+                DispatchQueue.main.sync {
+                    self.loadingSign.stopAnimating()
+                }
+            }
+        } else {
+            print("拍的不是不是图片？")
+        }
+        self.dismiss(animated: true)
+    }
+    
+    
+    func recognize(Image image: UIImage) {
+        let cgimage = image.cgImage
+        let width = cgimage?.width
+        let height = cgimage?.height
+        let point = malloc(MemoryLayout<UInt32>.size * width! * height!)
+        let context = CGContext(data: point, width: width!, height: height!, bitsPerComponent: 8, bytesPerRow: width! * 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: 1)
+        context?.draw(cgimage!, in: CGRect(x: 0, y: 0, width: Double(width!), height: Double(height!)))
+        let opaquePtr = OpaquePointer(point)
+        let pixel = UnsafeMutablePointer<UInt32>(opaquePtr)
+        var imageArray = [Int32]()
+        for h in 0 ..< height! {
+            if h % 8 != 0 {
+                continue
+            }
+            for w in 0 ..< width! {
+                if w % 8 != 0 {
+                    continue
+                }
+                let currentPixel = pixel! + width! * h + w
+                let a = OpaquePointer(currentPixel)
+                let b = UnsafeMutablePointer<UInt8>(a)
+                imageArray.append(Int32(b[0]))
+                imageArray.append(Int32(b[1]))
+                imageArray.append(Int32(b[2]))
+            }
+        }
+        let recognizer = ImageRecognizer()
+        recognizer.getMatrix(imageArray as! NSMutableArray, withWidth: Int32(width! / 8), andHeight: Int32(height! / 8))
+        recognizer.thinImage()
+        recognizer.findKeyPoint()
+        let strokeArray = recognizer.getStrokes() as! [[String]]
+        print(strokeArray)
     }
 }

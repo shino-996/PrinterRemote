@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		49B5B8D02FCF1FEE85F0D542 /* Pods_TypeRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E1BC71A736243C84B70CDA6 /* Pods_TypeRemote.framework */; };
 		B414BB091E718920008F2E6F /* PaintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B414BB081E718920008F2E6F /* PaintViewController.swift */; };
+		B45D91911EE940940084D82B /* ImageRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B45D91901EE940940084D82B /* ImageRecognizer.mm */; };
 		B476372C1E710155007AF472 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476372B1E710155007AF472 /* AppDelegate.swift */; };
 		B476372E1E710155007AF472 /* IPConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476372D1E710155007AF472 /* IPConnectViewController.swift */; };
 		B47637311E710155007AF472 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B476372F1E710155007AF472 /* Main.storyboard */; };
@@ -22,6 +23,9 @@
 /* Begin PBXFileReference section */
 		3E1BC71A736243C84B70CDA6 /* Pods_TypeRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TypeRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B414BB081E718920008F2E6F /* PaintViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaintViewController.swift; sourceTree = "<group>"; };
+		B45D917F1EE66D050084D82B /* TypeRemote-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TypeRemote-Bridging-Header.h"; sourceTree = "<group>"; };
+		B45D918F1EE940730084D82B /* ImageRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageRecognizer.h; sourceTree = "<group>"; };
+		B45D91901EE940940084D82B /* ImageRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageRecognizer.mm; sourceTree = "<group>"; };
 		B47637281E710155007AF472 /* TypeRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TypeRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B476372B1E710155007AF472 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B476372D1E710155007AF472 /* IPConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPConnectViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +97,9 @@
 				B4E89B371EC0485800089620 /* PaintView.swift */,
 				B476372D1E710155007AF472 /* IPConnectViewController.swift */,
 				B4E89B3B1EC0C91700089620 /* DrawHistoryViewController.swift */,
+				B45D917F1EE66D050084D82B /* TypeRemote-Bridging-Header.h */,
+				B45D918F1EE940730084D82B /* ImageRecognizer.h */,
+				B45D91901EE940940084D82B /* ImageRecognizer.mm */,
 				B476372F1E710155007AF472 /* Main.storyboard */,
 				B47637321E710155007AF472 /* Assets.xcassets */,
 				B47637341E710155007AF472 /* LaunchScreen.storyboard */,
@@ -137,6 +144,7 @@
 					B47637271E710155007AF472 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = R374EG3MSW;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -226,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B476372E1E710155007AF472 /* IPConnectViewController.swift in Sources */,
+				B45D91911EE940940084D82B /* ImageRecognizer.mm in Sources */,
 				B4E89B3C1EC0C91700089620 /* DrawHistoryViewController.swift in Sources */,
 				B4E89B381EC0485800089620 /* PaintView.swift in Sources */,
 				B414BB091E718920008F2E6F /* PaintViewController.swift in Sources */,
@@ -351,11 +360,14 @@
 			baseConfigurationReference = DB12B7431BABFEE23D00FDFE /* Pods-TypeRemote.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = R374EG3MSW;
 				INFOPLIST_FILE = TypeRemote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = space.shino.TypeRemote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "TypeRemote/TypeRemote-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -365,11 +377,13 @@
 			baseConfigurationReference = CC4F2D699F7BEB6418407965 /* Pods-TypeRemote.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = R374EG3MSW;
 				INFOPLIST_FILE = TypeRemote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = space.shino.TypeRemote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "TypeRemote/TypeRemote-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

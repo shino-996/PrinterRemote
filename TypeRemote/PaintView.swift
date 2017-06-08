@@ -16,6 +16,7 @@ class PaintView: UIView {
     
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
+        
         for pointArray in pointToDraw {
             let path = CGMutablePath()
             if pointArray.count > 0 {

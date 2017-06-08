@@ -33,6 +33,8 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>需要允许访问照片</string>
+	<string>可不可以让我访问一下照片</string>
+	<key>NSCameraUsageDescription</key>
+	<string>可不可以让我访问一下相机</string>
 </dict>
 </plist>
