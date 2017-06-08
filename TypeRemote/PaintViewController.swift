@@ -123,18 +123,27 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     }
     
     @IBAction func saveImage() {
-        PHPhotoLibrary.shared().performChanges({
-            let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
-            let photoID = result.placeholderForCreatedAsset?.localIdentifier
-            self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
-            let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
-            NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
-        }) { (ifSuccess: Bool, error: Error?) in
-            if ifSuccess {
-                print("Save sucessfully!")
-            } else {
-                print("Save failed!")
-                print(error!.localizedDescription)
+        DispatchQueue.global().async {
+            PHPhotoLibrary.shared().performChanges({
+                let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
+                let photoID = result.placeholderForCreatedAsset?.localIdentifier
+                self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
+                let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
+                NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
+            }) { (ifSuccess: Bool, error: Error?) in
+                if ifSuccess {
+                    print("Save sucessfully!")
+                    DispatchQueue.main.sync {
+                        let alertcontroller = UIAlertController(title: "保存成功！", message: nil, preferredStyle: .alert)
+                        self.present(alertcontroller, animated: true)
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                            self.presentedViewController?.dismiss(animated: true)
+                        }
+                    }
+                } else {
+                    print("Save failed!")
+                    print(error!.localizedDescription)
+                }
             }
         }
     }
