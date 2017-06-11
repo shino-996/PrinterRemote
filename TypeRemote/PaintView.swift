@@ -11,11 +11,10 @@ import UIKit
 class PaintView: UIView {
     var pointToDraw = [[CGPoint]]()
     var currentPointToDraw = [CGPoint]()
-    var plistArray = [[String: String]]()
-    var image: UIImage!
+    var cgContext: CGContext!
     
     override func draw(_ rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()
+        cgContext = UIGraphicsGetCurrentContext()
         for pointArray in pointToDraw {
             let path = CGMutablePath()
             if pointArray.count > 0 {
@@ -24,10 +23,10 @@ class PaintView: UIView {
             for point in pointArray {
                 path.addLine(to: point)
             }
-            context?.setStrokeColor(UIColor.black.cgColor)
-            context?.setLineWidth(2)
-            context?.addPath(path)
-            context?.strokePath()
+            cgContext?.setStrokeColor(UIColor.black.cgColor)
+            cgContext?.setLineWidth(2)
+            cgContext?.addPath(path)
+            cgContext?.strokePath()
         }
         
         if currentPointToDraw.count > 0 {
@@ -36,17 +35,20 @@ class PaintView: UIView {
             for point in currentPointToDraw {
                 path.addLine(to: point)
             }
-            context?.setStrokeColor(UIColor.black.cgColor)
-            context?.setLineWidth(2)
-            context?.addPath(path)
-            context?.strokePath()
+            cgContext?.setStrokeColor(UIColor.black.cgColor)
+            cgContext?.setLineWidth(2)
+            cgContext?.addPath(path)
+            cgContext?.strokePath()
         }
-        let cgImage = context?.makeImage()
-        image = UIImage(cgImage: cgImage!)
     }
     
     func draw(_ point: CGPoint) {
         currentPointToDraw.append(point)
+        self.setNeedsDisplay()
+    }
+    
+    func drawLines(_ lines: [[CGPoint]]) {
+        pointToDraw = lines
         self.setNeedsDisplay()
     }
     
@@ -60,5 +62,10 @@ class PaintView: UIView {
         pointToDraw.removeAll()
         currentPointToDraw.removeAll()
         self.setNeedsDisplay()
+    }
+    
+    func saveImage() -> UIImage {
+        let cgImage = cgContext.makeImage()
+        return UIImage(cgImage: cgImage!)
     }
 }

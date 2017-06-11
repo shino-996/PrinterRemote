@@ -7,19 +7,31 @@
 //
 
 import UIKit
-import Photos
+import CoreData
 
 protocol SendDrawHistory {
-    func sendDrawHistory(_ historyStr: String)
+    func sendDrawHistory(_ history: [[CGPoint]]?)
 }
 
 class DrawHistoryViewController: UITableViewController {
-    
-    var listData: [[String: String]]!
+
     var delegator: SendDrawHistory!
+    var data: [ImagePoints]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let fetchRequest = ImagePoints.fetchRequest() as NSFetchRequest
+        do {
+            data = try context.fetch(fetchRequest)
+        } catch(let error) {
+            print(error)
+        }
+    }
+    
+    @IBAction func returnView() {
+        self.dismiss(animated: true)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -27,35 +39,38 @@ class DrawHistoryViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listData.count
+        return data.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableView", for: indexPath)
         let index = indexPath.row
-        for photoID in listData[index].keys {
-            print(photoID)
-            let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [photoID], options: nil)
-            let asset = assetResult[0]
-            let options = PHContentEditingInputRequestOptions()
-            options.canHandleAdjustmentData = { (adjustmeta: PHAdjustmentData)->Bool in
-                return true
-            }
-            PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: nil) { (image, _:[AnyHashable : Any]?) in
-                DispatchQueue.main.async {
-                    cell.imageView?.image = image
-                    cell.textLabel?.text = "123"
-                }
-            }
-        }
+        cell.imageView?.image = UIImage(data: data[index].image! as Data)
+        cell.textLabel?.text = data[index].id
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
-        for historyStr in listData[index].values {
-            delegator.sendDrawHistory(historyStr)
-        }
-        dismiss(animated: true, completion: nil)
+        delegator.sendDrawHistory(data[index].points)
+        dismiss(animated: true)
     }
+    
+    override func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        return "删除"
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let index = indexPath.row
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            context.delete(data[index])
+            appDelegate.saveContext()
+            data.remove(at: index)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
+    
 }

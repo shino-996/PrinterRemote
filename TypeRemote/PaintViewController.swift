@@ -8,7 +8,6 @@
 
 import UIKit
 import CocoaAsyncSocket
-import Photos
 
 class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory {
     @IBOutlet weak var addressLabel: UILabel!
@@ -25,15 +24,6 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     override func viewDidLoad() {
         super.viewDidLoad()
         isFirstAppear = true
-        // 加载历史记录文件，如果没有记录，新建一个文件
-        let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
-        let arrayFromFile = NSArray(contentsOfFile: path)
-        if let array = arrayFromFile {
-            paintView.plistArray = array as! [[String : String]]
-        } else {
-            let emptyArray = [[String: String]]()
-            NSArray(array: emptyArray).write(toFile: path, atomically: true)
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -52,7 +42,6 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             controller.delegator = self
         } else if segue.identifier! == "DrawHistory" {
             let controller = segue.destination as! DrawHistoryViewController
-            controller.listData = paintView.plistArray
             controller.delegator = self
         }
     }
@@ -92,15 +81,15 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             let location = CGPoint(x: screenLocation.x / 300 * 1500, y: screenLocation.y / 200 * 1000)
             if CGRect(x: 0, y: 0, width: 1500, height: 1000).contains(location) {
                 lastLocation = location
-                let str = String(format: "%04d %04d 9", Int(location.x), Int(location.y))
-                print(str)
+                let udpStr = String(format: "%04d %04d 9", Int(location.x), Int(location.y))
+                print(udpStr)
                 paintView.draw(screenLocation)
-                locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
+                locationSender.send(udpStr.data(using: .ascii)!, withTimeout: -1, tag: 1)
             } else {
-                let str = String(format: "%04d %04d 0", Int(lastLocation.x), Int(lastLocation.y))
-                print(str)
+                let udpStr = String(format: "%04d %04d 0", Int(lastLocation.x), Int(lastLocation.y))
+                print(udpStr)
                 paintView.finishCurrentDraw()
-                locationSender.send(str.data(using: .ascii)!, withTimeout: -1, tag: 1)
+                locationSender.send(udpStr.data(using: .ascii)!, withTimeout: -1, tag: 1)
             }
         case .ended:
             fallthrough
@@ -123,55 +112,45 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
     }
     
     @IBAction func saveImage() {
-        DispatchQueue.global().async {
-            PHPhotoLibrary.shared().performChanges({
-                let result = PHAssetChangeRequest.creationRequestForAsset(from: self.paintView.image)
-                let photoID = result.placeholderForCreatedAsset?.localIdentifier
-                self.paintView.plistArray.append([photoID!: self.paintView.pointToDraw.description])
-                let path = NSHomeDirectory() + "/Documents/DrawHistory.plist"
-                NSArray(array: self.paintView.plistArray).write(toFile: path, atomically: true)
-            }) { (ifSuccess: Bool, error: Error?) in
-                if ifSuccess {
-                    print("Save sucessfully!")
-                    DispatchQueue.main.sync {
-                        let alertcontroller = UIAlertController(title: "保存成功！", message: nil, preferredStyle: .alert)
-                        self.present(alertcontroller, animated: true)
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                            self.presentedViewController?.dismiss(animated: true)
-                        }
-                    }
-                } else {
-                    print("Save failed!")
-                    print(error!.localizedDescription)
-                }
-            }
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let imagePoints = ImagePoints(context: context)
+        let data = UIImagePNGRepresentation(paintView.saveImage())
+        imagePoints.image = data! as NSData
+        imagePoints.points = paintView.pointToDraw
+        let now = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.hh.dd hh:mm"
+        imagePoints.id = dateFormatter.string(from: now)
+        appDelegate.saveContext()
+        let alertcontroller = UIAlertController(title: "保存成功！", message: nil, preferredStyle: .alert)
+        self.present(alertcontroller, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.presentedViewController?.dismiss(animated: true)
+            self.paintView.clearDraw()
         }
     }
     
-    func sendDrawHistory(_ historyStr: String) {
-        var lineSetStr = historyStr.substring(with: historyStr.index(historyStr.startIndex, offsetBy: 2) ..< historyStr.endIndex)
-        lineSetStr.remove(at: lineSetStr.index(before: lineSetStr.endIndex))
-        lineSetStr.remove(at: lineSetStr.index(before: lineSetStr.endIndex))
-        print(lineSetStr)
-        let lineStr = lineSetStr.components(separatedBy: "], [")
-        for pointSetStr in lineStr {
-            var points = pointSetStr.substring(with: pointSetStr.index(pointSetStr.startIndex, offsetBy: 1) ..< pointSetStr.endIndex)
-            points.remove(at: points.index(before: points.endIndex))
-            print(points)
-            let point = points.components(separatedBy: "), (")
-            for coordinate in point {
-                let str = coordinate
-                let coordinates = str.components(separatedBy: ", ")
-                let x = Double(coordinates[0])! / 300 * 1500
-                let y = Double(coordinates[1])! / 300 * 1500
-                let udpStr = String(format: "%04d %04d 9", Int(x), Int(y)) as Optional
-                locationSender.send((udpStr?.data(using: .ascii)!)!, withTimeout: -1, tag: 1)
-            }
-            let lastPointCoordinates = point.last?.components(separatedBy: ", ")
-            let x = Double((lastPointCoordinates?[0])!)! / 300 * 1500
-            let y = Double((lastPointCoordinates?[1])!)! / 200 * 1500
-            let udpStr = String(format: "%04d %04d 0", Int(x), Int(y)) as Optional
-            locationSender.send((udpStr?.data(using: .ascii)!)!, withTimeout: -1, tag: 1)
+    func sendDrawHistory(_ history: [[CGPoint]]?) {
+        guard let lines = history else {
+            return
         }
+        for line in lines {
+            for point in line {
+                let x = point.x / 300 * 1500
+                let y = point.y / 200 * 1000
+                let udpStr = String(format: "%04d %04d 9", Int(x), Int(y))
+                locationSender.send(udpStr.data(using: .ascii)!, withTimeout: -1, tag: 1)
+                print(udpStr)
+            }
+            if let endOfLine = line.last {
+                let x = endOfLine.x / 300 * 1500
+                let y = endOfLine.y / 200 * 1000
+                let udpStr = String(format: "%04d %04d 0", Int(x), Int(y))
+                locationSender.send(udpStr.data(using: .ascii)!, withTimeout: -1, tag: 1)
+                print(udpStr)
+            }
+        }
+        paintView.drawLines(lines)
     }
 }

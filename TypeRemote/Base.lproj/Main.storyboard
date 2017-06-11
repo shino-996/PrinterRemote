@@ -102,7 +102,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="历史记录"/>
                                 <connections>
-                                    <segue destination="UQd-60-E3J" kind="modal" identifier="DrawHistory" id="nz9-qq-51D"/>
+                                    <segue destination="UQd-60-E3J" kind="modal" identifier="DrawHistory" id="vS7-AS-AfN"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" misplaced="YES" id="Idf-gc-cXR" customClass="PaintView" customModule="TypeRemote" customModuleProvider="target">
@@ -141,14 +141,36 @@
         <!--Draw History View Controller-->
         <scene sceneID="qZL-l3-3EA">
             <objects>
-                <tableViewController id="UQd-60-E3J" customClass="DrawHistoryViewController" customModule="TypeRemote" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="UQd-60-E3J" userLabel="Draw History View Controller" customClass="DrawHistoryViewController" customModule="TypeRemote" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" id="p0N-Ww-QG8">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" misplaced="YES" id="znP-FL-iOm">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="历史记录" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="HYC-Zn-3UE">
+                                    <rect key="frame" x="115" y="19" width="91" height="26"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="vZe-4n-vkQ">
+                                    <rect key="frame" x="16" y="19" width="31" height="30"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" title="返回"/>
+                                    <connections>
+                                        <action selector="returnView" destination="UQd-60-E3J" eventType="touchUpInside" id="Lzf-8I-Qn7"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TableView" id="KPt-QS-tcY">
-                                <rect key="frame" x="0.0" y="28" width="320" height="80"/>
+                                <rect key="frame" x="0.0" y="93" width="320" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KPt-QS-tcY" id="BSK-0f-Y2a">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="79.5"/>
@@ -161,10 +183,11 @@
                             <outlet property="delegate" destination="UQd-60-E3J" id="aZi-iM-acx"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" title="历史记录" id="R8H-ZO-ieq"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lqA-mI-2JK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-243" y="828"/>
+            <point key="canvasLocation" x="-243" y="852"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
