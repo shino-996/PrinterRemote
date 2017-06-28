@@ -9,7 +9,7 @@
 import UIKit
 import CocoaAsyncSocket
 
-class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressDelegate, SendDrawHistory {
+class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, SendDrawHistory {
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var paintView: PaintView!
     // 记录程序是否第一次打开，保证在程序刚打开时会弹出连接界面
@@ -46,25 +46,10 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         }
     }
     
-    // IPConnectViewController委托方法，回调设置连接IPt端口
-    func set(Host host: String, AndPort port: UInt16) {
-        ipAddress = host
-        portAddress = port
-        // 连接前将地址栏状态设置为未连接
-        addressLabel.text = "Unconnected"
-        locationSender = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.global())
-        do {
-            try locationSender.connect(toHost: ipAddress, onPort: portAddress)
-        } catch(let error) {
-            print("UDP连接失败")
-            print(error)
-        }
-    }
-    
     // CocoaAsyncSocket委托方法，连接上UDP时在地址栏显示连接上的IP和端口
     func udpSocket(_ sock: GCDAsyncUdpSocket, didConnectToAddress address: Data) {
         DispatchQueue.main.sync {
-            addressLabel.text = ipAddress + ":  \(portAddress!)"
+            addressLabel.text = ipAddress + ": \(portAddress!)"
         }
     }
     
@@ -115,13 +100,9 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         let imagePoints = ImagePoints(context: context)
-        let data = UIImagePNGRepresentation(paintView.saveImage())
-        imagePoints.image = data! as NSData
+        imagePoints.image = UIImagePNGRepresentation(paintView.image())!
         imagePoints.points = paintView.pointToDraw
-        let now = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.hh.dd hh:mm"
-        imagePoints.id = dateFormatter.string(from: now)
+        imagePoints.id = Date()
         appDelegate.saveContext()
         let alertcontroller = UIAlertController(title: "保存成功！", message: nil, preferredStyle: .alert)
         self.present(alertcontroller, animated: true)
@@ -131,10 +112,7 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
         }
     }
     
-    func sendDrawHistory(_ history: [[CGPoint]]?) {
-        guard let lines = history else {
-            return
-        }
+    func drawHistory(_ lines: [[CGPoint]]) {
         for line in lines {
             for point in line {
                 let x = point.x / 300 * 1500
@@ -152,5 +130,23 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate, AddressD
             }
         }
         paintView.drawLines(lines)
+    }
+}
+
+// IPConnectViewController委托扩展
+extension PaintViewController: AddressDelegate {
+    // IPConnectViewController委托方法，回调设置连接IP端口
+    func set(host: String, AndPort port: UInt16) {
+        ipAddress = host
+        portAddress = port
+        // 连接前将地址栏状态设置为未连接
+        addressLabel.text = "Unconnected"
+        locationSender = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.global())
+        do {
+            try locationSender.connect(toHost: ipAddress, onPort: portAddress)
+        } catch(let error) {
+            print("UDP连接失败")
+            print(error)
+        }
     }
 }

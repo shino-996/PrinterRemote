@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 protocol SendDrawHistory {
-    func sendDrawHistory(_ history: [[CGPoint]]?)
+    func drawHistory(_ lines: [[CGPoint]])
 }
 
 class DrawHistoryViewController: UITableViewController {
@@ -24,7 +24,7 @@ class DrawHistoryViewController: UITableViewController {
         let context = appDelegate.persistentContainer.viewContext
         let fetchRequest = ImagePoints.fetchRequest() as NSFetchRequest
         do {
-            data = try context.fetch(fetchRequest)
+            data = try context.fetch(fetchRequest) 
         } catch(let error) {
             print(error)
         }
@@ -45,14 +45,16 @@ class DrawHistoryViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableView", for: indexPath)
         let index = indexPath.row
-        cell.imageView?.image = UIImage(data: data[index].image! as Data)
-        cell.textLabel?.text = data[index].id
+        cell.imageView?.image = UIImage(data: data[index].image)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.hh.dd hh:mm"
+        cell.textLabel?.text = dateFormatter.string(from: data[index].id)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
-        delegator.sendDrawHistory(data[index].points)
+        delegator.drawHistory(data[index].points)
         dismiss(animated: true)
     }
     

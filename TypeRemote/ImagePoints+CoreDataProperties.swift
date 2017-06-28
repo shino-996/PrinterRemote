@@ -2,7 +2,7 @@
 //  ImagePoints+CoreDataProperties.swift
 //  TypeRemote
 //
-//  Created by shino on 2017/6/11.
+//  Created by shino on 2017/6/28.
 //  Copyright © 2017年 shino. All rights reserved.
 //
 
@@ -17,8 +17,8 @@ extension ImagePoints {
         return NSFetchRequest<ImagePoints>(entityName: "ImagePoints")
     }
 
-    @NSManaged public var id: String?
-    @NSManaged public var points: [[CGPoint]]?
-    @NSManaged public var image: NSData?
+    @NSManaged public var id: Date
+    @NSManaged public var image: Data
+    @NSManaged public var points: [[CGPoint]]
 
 }

@@ -64,7 +64,7 @@ class PaintView: UIView {
         self.setNeedsDisplay()
     }
     
-    func saveImage() -> UIImage {
+    func image() -> UIImage {
         let cgImage = cgContext.makeImage()
         return UIImage(cgImage: cgImage!)
     }
