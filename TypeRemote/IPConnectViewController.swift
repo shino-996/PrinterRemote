@@ -41,7 +41,7 @@ class IPConnectViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    fileprivate func adressErrorAlert() {
+    private func adressErrorAlert() {
         let alert = UIAlertController(title: "提示", message: "地址格式错误！", preferredStyle: .alert)
         let alertAction = UIAlertAction(title: "确定", style: .default) { _ in
             self.presentedViewController?.dismiss(animated: true)
