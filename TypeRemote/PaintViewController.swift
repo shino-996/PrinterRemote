@@ -10,8 +10,8 @@ import UIKit
 import CocoaAsyncSocket
 
 class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
-    @IBOutlet weak var addressLabel: UILabel!
-    @IBOutlet weak var paintView: PaintView!
+    @IBOutlet weak var addressButton: UIButton!
+    @IBOutlet weak var operateButtons: UIStackView!
     // 记录程序是否第一次打开，保证在程序刚打开时会弹出连接界面
     var isFirstAppear = true
     // UDP对象
@@ -19,6 +19,8 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
     //上一次触摸的位置
     var lastLocation: CGPoint!
 
+    @IBOutlet weak var paintView: PaintView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -27,8 +29,8 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
         super.viewDidAppear(animated)
         // 显示界面后，如果是第一次打开程序，弹出连接界面
         if isFirstAppear {
-            isFirstAppear = false
             performSegue(withIdentifier: "ChangeIP", sender: self)
+            isFirstAppear = false
         }
     }
     
@@ -37,6 +39,11 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
         if segue.identifier! == "ChangeIP" {
             let controller = segue.destination as! IPConnectViewController
             controller.delegator = self
+            if isFirstAppear {
+                controller.isFirstLoad = true
+            } else {
+                controller.isFirstLoad = false
+            }
         } else if segue.identifier! == "DrawHistory" {
             let controller = segue.destination as! DrawHistoryViewController
             controller.delegator = self
@@ -49,17 +56,21 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
         case .possible:
             print("Touch possible")
         case .began:
-            lastLocation = moveSender.location(in: moveSender.view)
-            fallthrough
+            let location = moveSender.location(in: paintView)
+            if paintView.frame.contains(location) {
+                lastLocation = location
+            } else {
+                lastLocation = nil
+            }
         case .changed:
-            let location = moveSender.location(in: moveSender.view)
-            if CGRect(x: 0, y: 0, width: 300, height: 200).contains(location) {
+            if lastLocation == nil {
+                break
+            }
+            let location = moveSender.location(in: paintView)
+            if paintView.frame.contains(location) {
                 lastLocation = location
                 paintView.draw(location)
                 sendControlInfo(ofPoint: location, WithPenUp: false)
-            } else {
-                paintView.finishCurrentDraw()
-                sendControlInfo(ofPoint: lastLocation, WithPenUp: true)
             }
         case .ended:
             fallthrough
@@ -98,7 +109,8 @@ class PaintViewController: UIViewController, GCDAsyncUdpSocketDelegate {
         } else {
             penUpStr = "9"
         }
-        point.applying(CGAffineTransform(scaleX: 5, y: 5))
+        let scale = 3000 / max(paintView.frame.height, paintView.frame.width)
+        point.applying(CGAffineTransform(scaleX: scale, y: scale))
         let controlStr = String(format: "%04d %04d " + penUpStr, Int(point.x), Int(point.y))
         print(controlStr)
         locationSender.send(controlStr.data(using: .ascii)!, withTimeout: -1, tag: 1)
@@ -123,7 +135,8 @@ extension PaintViewController: SendDrawHistory {
 // IPConnectViewController委托扩展，回调设置连接IP端口
 extension PaintViewController: AddressDelegate {
     func set(host: String, AndPort port: UInt16) {
-        addressLabel.text = host + ": \(port)"
+        addressButton.titleLabel?.text = host + ": \(port)"
+        addressButton.setTitle(host + ":\(port)", for: .normal)
         locationSender = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.global())
         do {
             try locationSender.connect(toHost: host, onPort: port)

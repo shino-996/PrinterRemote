@@ -13,11 +13,12 @@ protocol SendDrawHistory {
     func drawHistory(_ lines: [[CGPoint]])
 }
 
-class DrawHistoryViewController: UITableViewController {
-
+class DrawHistoryViewController: UIViewController {
+    @IBOutlet weak var tableView: UITableView!
+    
     var delegator: SendDrawHistory!
     var data: [ImagePoints]!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -33,36 +34,45 @@ class DrawHistoryViewController: UITableViewController {
     @IBAction func returnView() {
         self.dismiss(animated: true)
     }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
+}
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+extension DrawHistoryViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableView", for: indexPath)
+                   as! DrawHistoryViewCell
         let index = indexPath.row
-        cell.imageView?.image = UIImage(data: data[index].image)
+        cell.historyDraw.image = UIImage(data: data[index].image)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.hh.dd hh:mm"
-        cell.textLabel?.text = dateFormatter.string(from: data[index].id)
+        cell.historyDateLabel.text = dateFormatter.string(from: data[index].id)
         return cell
     }
+
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = UIColor.white
+    }
+}
+
+extension DrawHistoryViewController: UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return data.count
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         delegator.drawHistory(data[index].points)
         dismiss(animated: true)
     }
     
-    override func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
         return "删除"
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let index = indexPath.row
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -73,6 +83,4 @@ class DrawHistoryViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
-    
-    
 }

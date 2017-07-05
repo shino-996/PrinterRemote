@@ -40,6 +40,7 @@ class PaintView: UIView {
             cgContext?.addPath(path)
             cgContext?.strokePath()
         }
+        
     }
     
     func draw(_ point: CGPoint) {
