@@ -15,10 +15,22 @@ protocol AddressDelegate {
 class IPConnectViewController: UIViewController {
     @IBOutlet weak var ipText: UITextField!
     @IBOutlet weak var portText: UITextField!
+    @IBOutlet weak var directReturnButton: UIButton!
+    
     var delegator: AddressDelegate!
-
+    var isFirstLoad: Bool!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        if isFirstLoad {
+            directReturnButton.isHidden = true
+        } else {
+            directReturnButton.isHidden = false
+        }
+    }
+    
+    @IBAction func directReturn() {
+        dismiss(animated: true)
     }
     
     @IBAction func changeIP() {
@@ -38,7 +50,7 @@ class IPConnectViewController: UIViewController {
             return
         }
         delegator.set(host: ip, AndPort: port)
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
     
     private func adressErrorAlert() {

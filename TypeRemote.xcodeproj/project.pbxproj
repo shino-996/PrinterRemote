@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		49B5B8D02FCF1FEE85F0D542 /* Pods_TypeRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E1BC71A736243C84B70CDA6 /* Pods_TypeRemote.framework */; };
 		B414BB091E718920008F2E6F /* PaintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B414BB081E718920008F2E6F /* PaintViewController.swift */; };
+		B42EAFF71F0795500037C33C /* DrawHistoryViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B42EAFF61F0795500037C33C /* DrawHistoryViewCell.swift */; };
 		B44FF61D1EED304B00C770AD /* TypeRemote.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B44FF61B1EED304B00C770AD /* TypeRemote.xcdatamodeld */; };
 		B476372C1E710155007AF472 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476372B1E710155007AF472 /* AppDelegate.swift */; };
 		B476372E1E710155007AF472 /* IPConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476372D1E710155007AF472 /* IPConnectViewController.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		3E1BC71A736243C84B70CDA6 /* Pods_TypeRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TypeRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B414BB081E718920008F2E6F /* PaintViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaintViewController.swift; sourceTree = "<group>"; };
+		B42EAFF61F0795500037C33C /* DrawHistoryViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawHistoryViewCell.swift; sourceTree = "<group>"; };
 		B44FF61C1EED304B00C770AD /* TypeRemote.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TypeRemote.xcdatamodel; sourceTree = "<group>"; };
 		B47637281E710155007AF472 /* TypeRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TypeRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B476372B1E710155007AF472 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				B4E89B371EC0485800089620 /* PaintView.swift */,
 				B476372D1E710155007AF472 /* IPConnectViewController.swift */,
 				B4E89B3B1EC0C91700089620 /* DrawHistoryViewController.swift */,
+				B42EAFF61F0795500037C33C /* DrawHistoryViewCell.swift */,
 				B476372F1E710155007AF472 /* Main.storyboard */,
 				B47637321E710155007AF472 /* Assets.xcassets */,
 				B47637341E710155007AF472 /* LaunchScreen.storyboard */,
@@ -245,6 +248,7 @@
 				B4BD2EBE1F035395008F0749 /* ImagePoints+CoreDataProperties.swift in Sources */,
 				B4E89B381EC0485800089620 /* PaintView.swift in Sources */,
 				B414BB091E718920008F2E6F /* PaintViewController.swift in Sources */,
+				B42EAFF71F0795500037C33C /* DrawHistoryViewCell.swift in Sources */,
 				B476372C1E710155007AF472 /* AppDelegate.swift in Sources */,
 				B44FF61D1EED304B00C770AD /* TypeRemote.xcdatamodeld in Sources */,
 				B4BD2EBD1F035395008F0749 /* ImagePoints+CoreDataClass.swift in Sources */,
